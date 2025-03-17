@@ -34,12 +34,19 @@ exports.login = async (req, res, next) => {
   }
 };
 
-exports.getMe = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (error) {
-    next(error);
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(400).json({ message: 'Refresh token required' });
+
+  const storedToken = await RefreshToken.findOne({ token: refreshToken });
+  if (!storedToken || storedToken.expiresAt < new Date()) {
+    return res.status(401).json({ message: 'Invalid or expired refresh token' });
   }
+
+  jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ message: 'Invalid refresh token' });
+
+    const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.json({ accessToken: newAccessToken });
+  });
 };

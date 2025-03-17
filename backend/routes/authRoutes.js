@@ -3,6 +3,9 @@ const router = express.Router();
 const authService = require('../services/authService');
 const authMiddleware = require('../middleware/auth');
 const { validateRequired } = require('../utils/validator');
+const { validateAuth } = require('../middleware/validator');
+router.post('/login', validateAuth, authController.login);
+router.post('/refresh', authController.refreshToken);
 
 router.post('/register', async (req, res, next) => {
   try {

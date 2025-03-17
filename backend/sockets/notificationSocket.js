@@ -22,4 +22,17 @@ const initSocket = (io) => {
   return { sendNotification };
 };
 
+exports.initSocket = (io) => {
+  io.on('connection', (socket) => {
+    socket.on('join', (userId) => {
+      socket.join(userId); // Mỗi user join room riêng
+    });
+  });
+};
+
+exports.sendNotification = async (userId, message) => {
+  await Notification.create({ userId, message });
+  io.to(userId).emit('notification', { message });
+};
+
 module.exports = { initSocket };

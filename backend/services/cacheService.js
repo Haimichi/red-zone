@@ -8,6 +8,10 @@ const redisClient = require('../config/redis');
  */
 exports.getCachedData = async (key, fetchData, ttl = 3600) => {
   try {
+    if (!redisClient.isReady) {
+      return await fetchData();
+    }
+
     // Kiểm tra dữ liệu trong cache
     const cachedData = await redisClient.get(key);
     if (cachedData) {
@@ -34,6 +38,8 @@ exports.getCachedData = async (key, fetchData, ttl = 3600) => {
  */
 exports.invalidateCache = async (pattern) => {
   try {
+    if (!redisClient.isReady) return;
+
     // Nếu là key cụ thể
     if (!pattern.includes('*')) {
       await redisClient.del(pattern);

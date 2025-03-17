@@ -1,36 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const newsService = require('../services/newsService');
+const newsController = require('../controllers/newsController');
 const authMiddleware = require('../middleware/auth');
 const roleCheck = require('../middleware/roleCheck');
+const { validateNews } = require('../middleware/validator');
 
-router.get('/', async (req, res, next) => {
-  try {
-    const result = await newsService.getNews(req.query);
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+// Get all news
+router.get('/', newsController.getNews);
 
-router.get('/:id', async (req, res, next) => {
-  try {
-    const news = await newsService.getNewsById(req.params.id);
-    res.json(news);
-  } catch (error) {
-    next(error);
-  }
-});
+// Get news by id
+router.get('/:id', newsController.getNewsById);
 
-router.post('/', authMiddleware, roleCheck(['admin', 'editor']), async (req, res, next) => {
-  try {
-    const news = await newsService.createNews(req.body, req.user.id);
-    const sendNotification = req.app.get('sendNotification');
-    await sendNotification(req.user.id, `Tin tức mới: ${news.title}`, 'news');
-    res.status(201).json(news);
-  } catch (error) {
-    next(error);
-  }
-});
+// Create news (yêu cầu xác thực và phân quyền)
+router.post('/',
+  authMiddleware,
+  roleCheck(['admin', 'editor']),
+  validateNews,
+  newsController.createNews
+);
 
 module.exports = router;
