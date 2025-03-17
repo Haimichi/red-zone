@@ -3,7 +3,6 @@ const helmet = require('helmet');
 const rateLimit = require('./middleware/rateLimit'); // Sửa từ '../' thành './'
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
-const cors = require('cors');
 
 const app = express();
 
@@ -12,9 +11,6 @@ connectDB();
 app.use(helmet());
 app.use(express.json());
 app.use(rateLimit);
-
-
-app.use(cors({ origin: 'http://localhost:3000' }));
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/news', require('./routes/newsRoutes'));

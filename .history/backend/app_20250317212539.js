@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(rateLimit);
 
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: 'http://localhost:3000' })); // Điều chỉnh origin theo frontend
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/news', require('./routes/newsRoutes'));
