@@ -27,12 +27,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "node_modules/",
-      "migrations/"
-    ],
-    "ext": "js"
   }
 }
